@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            height: 100vh;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 0.75rem;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background-color: #e9ecef;
+            color: #007bff;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        #logout-btn {
+            padding: 0.5rem 1rem;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-top: 1.5rem;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        #add-student-form input,
+        #add-student-form select,
+        #search-student {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #add-student-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #student-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #student-list li {
+            background: #f8f9fa;
+            padding: 1rem;
+            border: 1px solid #eee;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .delete-btn {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin-top: 1rem;
+        }
+
+        .page-view.hidden {
+            display: none;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #007bff;
+            background-color: white;
+            color: #007bff;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .filter-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #courses-ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        #add-course-form,
+        #delete-course-section {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <h2>Menu</h2>
+            <div id="welcome-message"></div>
+            <hr>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active" data-target="dashboard-view" id="nav-dashboard">Dashboard</a></li>
+                    <li><a href="#" data-target="students-view" id="nav-students">Students</a></li>
+                    <li><a href="#" data-target="courses-view" id="nav-courses">Courses</a></li>
+                    <li><a href="#" data-target="attendance-view" id="nav-attendance">Attendance</a></li>
+                    <li><a href="#" data-target="subjects-view" id="nav-subjects" style="display:none;">Manage
+                            Subjects</a></li>
+                    <li><a href="#" data-target="courses-view" id="nav-student-subjects"
+                            style="display:none;">Subjects</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <h1>Student Management System</h1>
+                <button id="logout-btn">Logout</button>
+            </header>
+
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="page-view">
+                <div class="card" style="display: flex; justify-content: space-around; text-align: center;">
+                    <div>
+                        <h3>Active Students</h3>
+                        <h2 id="active-count-display">0</h2>
+                    </div>
+                    <div>
+                        <h3>Inactive Students</h3>
+                        <h2 id="inactive-count-display">0</h2>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Active Students Distribution (Pie Graph)</h3>
+                    <canvas id="activeStudentChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Inactive Students Distribution (Column Graph)</h3>
+                    <canvas id="inactiveStudentChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Students View -->
+            <div id="students-view" class="page-view hidden">
+                <div class="card">
+                    <h3>Add New Student</h3>
+                    <form id="add-student-form">
+                        <input type="text" id="student-name" placeholder="Student Name" required>
+                        <input type="email" id="student-email" placeholder="Student Email" required>
+                        <input type="text" id="student-course" placeholder="Course" required>
+                        <select id="student-status" required>
+                            <option value="" disabled selected>Select Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <button type="submit">Add Student</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Filter Students</h3>
+                    <div class="filter-container">
+                        <button class="filter-btn active" data-status="all">All</button>
+                        <button class="filter-btn" data-status="active">Active</button>
+                        <button class="filter-btn" data-status="inactive">Inactive</button>
+                    </div>
+                </div>
+                <div class="card" id="student-list">
+                    <h3>All Students</h3>
+                    <ul id="students-ul">
+                        <!-- Student items will be injected here by JavaScript -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Courses View -->
+            <div id="courses-view" class="page-view hidden">
+                <div class="card">
+                    <h3>Available Courses</h3>
+                    <!-- Admin-only Add Course Form -->
+                    <div id="add-course-container" style="display: none; margin-bottom: 1rem;">
+                        <form id="add-course-form">
+                            <input type="text" id="course-name" placeholder="New Course Name" required
+                                style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                            <button type="submit">Add Course</button>
+                        </form>
+                    </div>
+                    <ul id="courses-ul"></ul>
+                </div>
+            </div>
+
+            <!-- Subjects View (Admin Only) -->
+            <div id="subjects-view" class="page-view hidden">
+                <div class="card">
+                    <h3>Manage Subjects</h3>
+                    <form id="add-subject-form" style="display: flex; gap: 10px; margin-bottom: 1rem;">
+                        <input type="text" id="new-subject-name" placeholder="Subject Name" required
+                            style="flex-grow: 1;">
+                        <button type="submit" style="width: auto;">Add Subject</button>
+                    </form>
+                    <ul id="admin-subjects-list" style="list-style: none; padding: 0;"></ul>
+                </div>
+            </div>
+
+            <!-- Attendance View -->
+            <div id="attendance-view" class="page-view hidden">
+                <div class="card">
+                    <h3>Attendance Management</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="attendance-date">Date:</label>
+                        <input type="date" id="attendance-date" style="width: auto; display: inline-block;">
+                        <button id="load-attendance-btn" style="width: auto; display: inline-block;">Load</button>
+                        <button id="generate-attendance-btn"
+                            style="width: auto; display: inline-block; background-color: #ffc107; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Generate
+                            Random Attendance</button>
+                    </div>
+                    <form id="attendance-form">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+                            <thead>
+                                <tr style="background: #f8f9fa; text-align: left;">
+                                    <th style="padding: 10px; border-bottom: 1px solid #ddd;">Student Name</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #ddd;">Course</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #ddd;">Attendance %</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #ddd;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-tbody">
+                                <!-- Attendance rows will be injected here -->
+                            </tbody>
+                        </table>
+                        <button type="submit" id="save-attendance-btn"
+                            style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Save
+                            Attendance</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
